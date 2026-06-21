@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='js/vendor/chart.min.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="usage-container">
+    <h2>使用報表</h2>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>熱門檔案</h3>
+            <canvas id="chart-files"></canvas>
+        </div>
+
+        <div class="stat-card">
+            <h3>依機器統計</h3>
+            <canvas id="chart-machines"></canvas>
+        </div>
+
+        <div class="stat-card">
+            <h3>依使用者統計</h3>
+            <canvas id="chart-users"></canvas>
+        </div>
+
+        <div class="stat-card">
+            <h3>每日使用量</h3>
+            <canvas id="chart-daily"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/usage.js') }}"></script>
+{% endblock %}

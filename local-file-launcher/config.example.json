@@ -1,0 +1,14 @@
+{
+  "folder": "D:\\公司資料\\共用區",
+  "port": 8765,
+  "title": "部門共用檔案",
+  "open_browser": true,
+  "show_hidden": false,
+  "tracking": {
+    "enabled": false,
+    "machine_name": "PC-A",
+    "shared_log_dir": "\\\\server\\share\\file-launcher-logs",
+    "flush_interval_seconds": 60,
+    "retention_days": 90
+  }
+}

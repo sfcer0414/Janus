@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "本機檔案啟動器擴充套件範例",
+  "version": "1.0.0",
+  "description": "與本機檔案啟動器互動的範例擴充套件",
+  "permissions": [],
+  "host_permissions": [
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost:8765/*",
+        "http://localhost:8766/*",
+        "http://localhost:8767/*",
+        "http://localhost:8768/*",
+        "http://localhost:8769/*",
+        "http://127.0.0.1:8765/*",
+        "http://127.0.0.1:8766/*",
+        "http://127.0.0.1:8767/*",
+        "http://127.0.0.1:8768/*",
+        "http://127.0.0.1:8769/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

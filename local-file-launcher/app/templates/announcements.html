@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="announcements-container">
+    <h2>公告</h2>
+    <div id="announcements-list" class="announcements-list">
+        {% if announcements %}
+            {% for announcement in announcements %}
+            <div class="announcement-item">
+                <div class="announcement-header">
+                    <h3 class="announcement-title">{{ announcement.title }}</h3>
+                    <span class="announcement-date">{{ announcement.date }}</span>
+                </div>
+                <div class="announcement-body">
+                    {{ announcement.body }}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="empty-message">目前沒有公告</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

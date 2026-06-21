@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>測試點擊開檔功能</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>測試點擊開檔功能</h1>
+    <p>請在主程式中點擊一個檔案，然後查看下方的除錯資訊：</p>
+
+    <h2>測試按鈕</h2>
+    <button onclick="testOpen()">測試開啟 README.md</button>
+
+    <h2>除錯資訊</h2>
+    <pre id="debug"></pre>
+
+    <script>
+        async function testOpen() {
+            const debugEl = document.getElementById('debug');
+
+            try {
+                debugEl.textContent = '正在發送請求...\n';
+
+                const response = await fetch('http://127.0.0.1:8765/api/open', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ rel: 'README.md' })
+                });
+
+                debugEl.textContent += `回應狀態: ${response.status}\n`;
+
+                const data = await response.json();
+                debugEl.textContent += `回應內容: ${JSON.stringify(data, null, 2)}\n`;
+
+                if (!response.ok) {
+                    debugEl.textContent += `錯誤: ${data.error || '未知錯誤'}\n`;
+                }
+
+            } catch (error) {
+                debugEl.textContent += `Fetch 錯誤: ${error.message}\n`;
+                debugEl.textContent += `錯誤詳情: ${error.stack}\n`;
+            }
+        }
+    </script>
+</body>
+</html>

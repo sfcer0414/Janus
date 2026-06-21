@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="files-container">
+    <!-- 麵包屑導航 -->
+    <nav class="breadcrumb">
+        <a href="#" data-rel="" class="breadcrumb-item">根目錄</a>
+        {% if data.crumbs %}
+            {% for crumb in data.crumbs %}
+                <span class="breadcrumb-separator">/</span>
+                <a href="#" data-rel="{{ crumb.rel }}" class="breadcrumb-item">{{ crumb.name }}</a>
+            {% endfor %}
+        {% endif %}
+    </nav>
+
+    <!-- 篩選器 -->
+    <div class="filter-container">
+        <input type="text" id="filter-input" class="filter-input" placeholder="篩選檔案...">
+    </div>
+
+    <!-- 錯誤訊息 -->
+    {% if not data.ok %}
+    <div class="error-message">
+        {{ data.error }}
+    </div>
+    {% endif %}
+
+    <!-- 返回上層 -->
+    {% if data.parent is defined and data.parent %}
+    <div class="file-entry">
+        <a href="#" class="dir-link" data-rel="{{ data.parent }}" data-type="dir">
+            <span class="icon">📁</span> ..
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- 檔案清單 -->
+    <div id="file-list" class="file-list">
+        {% if data.entries %}
+            {% for entry in data.entries %}
+            <div class="file-entry" data-name="{{ entry.name }}">
+                {% if entry.type == 'dir' %}
+                    <a href="#" class="dir-link"
+                       data-rel="{% if data.rel %}{{ data.rel }}/{{ entry.name }}{% else %}{{ entry.name }}{% endif %}"
+                       data-name="{{ entry.name }}"
+                       data-type="dir"
+                       data-ext=""
+                       data-size="0"
+                       data-mtime="{{ entry.mtime }}">
+                        <span class="icon">📁</span> {{ entry.name }}
+                    </a>
+                {% else %}
+                    <a href="#" class="file-link"
+                       data-rel="{% if data.rel %}{{ data.rel }}/{{ entry.name }}{% else %}{{ entry.name }}{% endif %}"
+                       data-name="{{ entry.name }}"
+                       data-type="file"
+                       data-ext="{{ entry.ext }}"
+                       data-size="{{ entry.size }}"
+                       data-mtime="{{ entry.mtime }}">
+                        <span class="icon">📄</span> {{ entry.name }}
+                    </a>
+                    <span class="file-info">{{ entry.size | filesizeformat }} • {{ entry.mtime }}</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-message">此資料夾是空的</div>
+        {% endif %}
+    </div>
+
+    <!-- 公告區塊 -->
+    <div id="announcements-section" class="announcements-section">
+        <h3>最新公告</h3>
+        <div id="announcements-preview" class="announcements-preview">
+            <!-- 公告將在此動態載入 -->
+        </div>
+        <a href="/announcements" class="view-all-link">查看所有公告 →</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block filelist_data %}
+{{ data | tojson }}
+{% endblock %}
