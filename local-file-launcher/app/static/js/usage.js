@@ -3,6 +3,65 @@
  */
 const UsageReport = {
     /**
+     * 取得圖表基本選項
+     */
+    getChartOptions(type = 'bar') {
+        const baseOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: type === 'pie',
+                    position: 'bottom'
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    padding: 10,
+                    cornerRadius: 4,
+                    titleFont: {
+                        size: 13
+                    },
+                    bodyFont: {
+                        size: 12
+                    }
+                }
+            }
+        };
+
+        if (type !== 'pie') {
+            baseOptions.scales = {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        font: {
+                            size: 11
+                        }
+                    },
+                    grid: {
+                        display: true,
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: 11
+                        },
+                        maxRotation: 45,
+                        minRotation: 0
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            };
+        }
+
+        return baseOptions;
+    },
+
+    /**
      * 初始化報表頁面
      */
     async init() {
@@ -66,23 +125,13 @@ const UsageReport = {
                 datasets: [{
                     label: '開啟次數',
                     data: topFiles.map(f => f.count),
-                    backgroundColor: 'rgba(52, 152, 219, 0.6)',
+                    backgroundColor: 'rgba(52, 152, 219, 0.7)',
                     borderColor: 'rgba(52, 152, 219, 1)',
-                    borderWidth: 1
+                    borderWidth: 1,
+                    borderRadius: 4
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        }
-                    }
-                }
-            }
+            options: this.getChartOptions('bar')
         });
     },
 
@@ -101,26 +150,20 @@ const UsageReport = {
                 datasets: [{
                     data: machines.map(m => m.count),
                     backgroundColor: [
-                        'rgba(231, 76, 60, 0.6)',
-                        'rgba(52, 152, 219, 0.6)',
-                        'rgba(46, 204, 113, 0.6)',
-                        'rgba(241, 196, 15, 0.6)',
-                        'rgba(155, 89, 182, 0.6)'
+                        'rgba(231, 76, 60, 0.7)',
+                        'rgba(52, 152, 219, 0.7)',
+                        'rgba(46, 204, 113, 0.7)',
+                        'rgba(241, 196, 15, 0.7)',
+                        'rgba(155, 89, 182, 0.7)',
+                        'rgba(26, 188, 156, 0.7)',
+                        'rgba(52, 73, 94, 0.7)',
+                        'rgba(230, 126, 34, 0.7)'
                     ],
-                    borderColor: [
-                        'rgba(231, 76, 60, 1)',
-                        'rgba(52, 152, 219, 1)',
-                        'rgba(46, 204, 113, 1)',
-                        'rgba(241, 196, 15, 1)',
-                        'rgba(155, 89, 182, 1)'
-                    ],
-                    borderWidth: 1
+                    borderColor: '#fff',
+                    borderWidth: 2
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
+            options: this.getChartOptions('pie')
         });
     },
 
@@ -142,23 +185,13 @@ const UsageReport = {
                 datasets: [{
                     label: '使用次數',
                     data: topUsers.map(u => u.count),
-                    backgroundColor: 'rgba(46, 204, 113, 0.6)',
+                    backgroundColor: 'rgba(46, 204, 113, 0.7)',
                     borderColor: 'rgba(46, 204, 113, 1)',
-                    borderWidth: 1
+                    borderWidth: 1,
+                    borderRadius: 4
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        }
-                    }
-                }
-            }
+            options: this.getChartOptions('bar')
         });
     },
 
@@ -173,30 +206,34 @@ const UsageReport = {
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: days.map(d => d.date),
+                labels: days.map(d => this.formatDate(d.date)),
                 datasets: [{
                     label: '使用次數',
                     data: days.map(d => d.count),
-                    backgroundColor: 'rgba(241, 196, 15, 0.2)',
+                    backgroundColor: 'rgba(241, 196, 15, 0.1)',
                     borderColor: 'rgba(241, 196, 15, 1)',
-                    borderWidth: 2,
+                    borderWidth: 2.5,
                     fill: true,
-                    tension: 0.4
+                    tension: 0.3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: 'rgba(241, 196, 15, 1)',
+                    pointBorderWidth: 2
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        }
-                    }
-                }
-            }
+            options: this.getChartOptions('line')
         });
+    },
+
+    /**
+     * 格式化日期
+     * @param {string} dateStr - 日期字串 (YYYY-MM-DD)
+     * @returns {string} 格式化後的日期 (MM/DD)
+     */
+    formatDate(dateStr) {
+        const [year, month, day] = dateStr.split('-');
+        return `${month}/${day}`;
     },
 
     /**

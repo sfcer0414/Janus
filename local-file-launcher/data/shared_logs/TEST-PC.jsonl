@@ -9,3 +9,9 @@
 {"ts": "2026-06-20T08:01:57.381624+00:00", "machine": "TEST-PC", "user": "sfcer", "type": "open", "path": "config.example.json"}
 {"ts": "2026-06-20T08:02:04.885775+00:00", "machine": "TEST-PC", "user": "sfcer", "type": "open", "path": "test_click.html"}
 {"ts": "2026-06-21T05:52:16.067387+00:00", "machine": "TEST-PC", "user": "sfcer", "type": "view", "path": "announcements"}
+{"ts": "2026-06-21T06:13:49.599814+00:00", "machine": "TEST-PC", "user": "sfcer", "type": "view", "path": "announcements"}
+{"ts": "2026-06-21T06:13:52.919786+00:00", "machine": "TEST-PC", "user": "sfcer", "type": "list", "path": "extension-example"}
+{"ts": "2026-06-21T06:13:54.957315+00:00", "machine": "TEST-PC", "user": "sfcer", "type": "open", "path": "extension-example/manifest.json"}
+{"ts": "2026-06-21T06:13:58.918829+00:00", "machine": "TEST-PC", "user": "sfcer", "type": "list", "path": "/"}
+{"ts": "2026-06-21T06:14:02.440300+00:00", "machine": "TEST-PC", "user": "sfcer", "type": "view", "path": "announcements"}
+{"ts": "2026-06-21T06:14:03.419405+00:00", "machine": "TEST-PC", "user": "sfcer", "type": "view", "path": "announcements"}
