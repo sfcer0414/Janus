@@ -1,0 +1,418 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='js/vendor/chart.min.js') }}"></script>
+<style>
+    .user-stats-container {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .controls-bar {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .control-group label {
+        font-size: 0.9rem;
+        color: #666;
+        font-weight: 500;
+    }
+
+    .control-group select,
+    .control-group .btn-group {
+        min-width: 200px;
+    }
+
+    select {
+        padding: 0.6rem;
+        border: 2px solid #e1e8ed;
+        border-radius: 6px;
+        font-size: 1rem;
+        background: white;
+        cursor: pointer;
+    }
+
+    select:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 0;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .btn-group button {
+        flex: 1;
+        padding: 0.6rem 1rem;
+        background: white;
+        border: 1px solid #e1e8ed;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+
+    .btn-group button:not(:last-child) {
+        border-right: none;
+    }
+
+    .btn-group button.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: #667eea;
+    }
+
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .metric-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .metric-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin: 0.5rem 0;
+    }
+
+    .metric-label {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+    }
+
+    .metric-change {
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+
+    .metric-change.positive {
+        color: #27ae60;
+    }
+
+    .metric-change.negative {
+        color: #e74c3c;
+    }
+
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .chart-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        min-height: 400px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chart-card.full-width {
+        grid-column: span 2;
+    }
+
+    .chart-card h3 {
+        margin-bottom: 1.5rem;
+        color: #2c3e50;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .chart-card canvas {
+        flex: 1;
+        max-height: 350px;
+    }
+
+    .file-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .file-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .file-item:last-child {
+        border-bottom: none;
+    }
+
+    .file-name {
+        font-size: 0.95rem;
+        color: #2c3e50;
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .file-count {
+        background: #ecf0f1;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        color: #34495e;
+        font-weight: 600;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 3rem;
+        color: #7f8c8d;
+    }
+
+    .loading-spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 3rem;
+        color: #95a5a6;
+    }
+
+    .comparison-table {
+        width: 100%;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .comparison-table thead {
+        background: #f8f9fa;
+    }
+
+    .comparison-table th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: #2c3e50;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .comparison-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .comparison-table tbody tr:hover {
+        background: #f8f9fa;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .badge-gold {
+        background: #ffd700;
+        color: #333;
+    }
+
+    .badge-silver {
+        background: #c0c0c0;
+        color: #333;
+    }
+
+    .badge-bronze {
+        background: #cd7f32;
+        color: white;
+    }
+
+    @media screen and (max-width: 1366px) {
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .chart-card.full-width {
+            grid-column: span 1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="user-stats-container">
+    <h2>使用者統計分析</h2>
+
+    <!-- 控制列 -->
+    <div class="controls-bar">
+        <div class="control-group">
+            <label for="userSelect">選擇使用者</label>
+            <select id="userSelect">
+                <option value="">載入中...</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label>統計期間</label>
+            <div class="btn-group">
+                <button class="period-btn" data-period="week">本週</button>
+                <button class="period-btn active" data-period="month">本月</button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label>&nbsp;</label>
+            <button id="refreshBtn" class="btn" style="background: #3498db; color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 6px; cursor: pointer;">
+                重新整理
+            </button>
+        </div>
+    </div>
+
+    <!-- 計算公式說明 -->
+    <div class="formula-info" style="background: linear-gradient(135deg, #667eea15, #764ba215); border: 1px solid #667eea30; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+        <h3 style="margin: 0 0 1rem 0; color: #667eea; font-size: 1.1rem;">📊 效益計算說明</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <div>
+                <h4 style="margin: 0 0 0.5rem 0; color: #4a5568; font-size: 0.95rem; font-weight: 600;">⏱️ 節省時間計算</h4>
+                <p style="margin: 0; color: #6b7280; font-size: 0.9rem; line-height: 1.5;">
+                    <code style="background: #f3f4f6; padding: 0.2rem 0.5rem; border-radius: 4px; color: #374151;">節省時間 = 開檔次數 × 30秒</code><br>
+                    每次使用系統開檔平均節省 30 秒搜尋時間
+                </p>
+            </div>
+            <div>
+                <h4 style="margin: 0 0 0.5rem 0; color: #4a5568; font-size: 0.95rem; font-weight: 600;">🎯 生產力分數計算</h4>
+                <p style="margin: 0; color: #6b7280; font-size: 0.9rem; line-height: 1.5;">
+                    <code style="background: #f3f4f6; padding: 0.2rem 0.5rem; border-radius: 4px; color: #374151;">生產力分數 = min(100, 開檔次數 × 2.5)</code><br>
+                    開檔 40 次即達滿分，反映工作效率提升程度
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 關鍵指標 -->
+    <div class="metrics-grid" id="metricsGrid">
+        <div class="metric-card">
+            <div class="metric-label">總開檔次數</div>
+            <div class="metric-value" id="totalOpens">-</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">總瀏覽次數</div>
+            <div class="metric-value" id="totalViews">-</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">節省時間</div>
+            <div class="metric-value" id="timeSaved">-</div>
+            <div class="metric-formula" style="font-size: 0.75rem; color: #95a5a6; margin-top: 0.5rem; font-style: italic;">
+                每次開檔節省 30 秒搜尋時間
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">生產力分數</div>
+            <div class="metric-value" id="productivityScore">-</div>
+            <div class="metric-formula" style="font-size: 0.75rem; color: #95a5a6; margin-top: 0.5rem; font-style: italic;">
+                計算公式: min(100, 開檔次數 × 2.5)
+            </div>
+        </div>
+    </div>
+
+    <!-- 圖表區域 -->
+    <div class="charts-grid" id="chartsGrid">
+        <!-- 每日使用趨勢 -->
+        <div class="chart-card full-width">
+            <h3>每日使用趨勢</h3>
+            <canvas id="dailyUsageChart"></canvas>
+        </div>
+
+        <!-- 檔案使用排名 -->
+        <div class="chart-card">
+            <h3>熱門檔案 TOP 10</h3>
+            <ul class="file-list" id="fileRanking">
+                <li class="no-data">暫無數據</li>
+            </ul>
+        </div>
+
+        <!-- 使用時段分析 -->
+        <div class="chart-card">
+            <h3>使用時段分析（24小時）</h3>
+            <canvas id="hourlyChart"></canvas>
+        </div>
+
+        <!-- 檔案類型分析 -->
+        <div class="chart-card">
+            <h3>檔案類型分布</h3>
+            <canvas id="fileTypesChart"></canvas>
+        </div>
+
+        <!-- 週統計 -->
+        <div class="chart-card">
+            <h3>週統計摘要</h3>
+            <canvas id="weeklyChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 使用者比較表 -->
+    <div class="chart-card full-width">
+        <h3>使用者排行榜（本月）</h3>
+        <table class="comparison-table" id="comparisonTable">
+            <thead>
+                <tr>
+                    <th>排名</th>
+                    <th>使用者</th>
+                    <th>開檔次數</th>
+                    <th>總操作次數</th>
+                    <th>生產力分數</th>
+                </tr>
+            </thead>
+            <tbody id="comparisonBody">
+                <tr>
+                    <td colspan="5" class="no-data">載入中...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/user_stats.js') }}"></script>
+{% endblock %}
