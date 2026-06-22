@@ -91,9 +91,9 @@ const UsageReport = {
             this.renderTopFiles(data.top_files);
         }
 
-        // 依機器統計
-        if (data.by_machine && data.by_machine.length > 0) {
-            this.renderByMachine(data.by_machine);
+        // 依瀏覽器統計
+        if (data.by_browser && data.by_browser.length > 0) {
+            this.renderByBrowser(data.by_browser);
         }
 
         // 依使用者統計
@@ -136,19 +136,19 @@ const UsageReport = {
     },
 
     /**
-     * 渲染依機器統計圖表
-     * @param {Array} machines - 機器資料
+     * 渲染依瀏覽器統計圖表
+     * @param {Array} browsers - 瀏覽器資料
      */
-    renderByMachine(machines) {
-        const ctx = document.getElementById('chart-machines');
+    renderByBrowser(browsers) {
+        const ctx = document.getElementById('chart-browsers');
         if (!ctx) return;
 
         new Chart(ctx, {
             type: 'pie',
             data: {
-                labels: machines.map(m => m.machine),
+                labels: browsers.map(b => b.browser),
                 datasets: [{
-                    data: machines.map(m => m.count),
+                    data: browsers.map(b => b.count),
                     backgroundColor: [
                         'rgba(231, 76, 60, 0.7)',
                         'rgba(52, 152, 219, 0.7)',

@@ -4,6 +4,7 @@ Flask 應用初始化模組
 from flask import Flask
 from .config import Config
 import os
+import secrets
 
 
 def create_app(config_path='config.json'):
@@ -18,6 +19,9 @@ def create_app(config_path='config.json'):
     """
     app = Flask(__name__)
 
+    # 設定 SECRET_KEY（用於 session 和 cookie 簽名）
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or secrets.token_hex(32)
+
     # 載入設定
     try:
         config = Config(config_path)
@@ -31,11 +35,13 @@ def create_app(config_path='config.json'):
         print(f"警告：指定的資料夾不存在: {config.folder}")
 
     # 註冊藍圖
-    from .views import files, announcements, usage, track
+    from .views import files, announcements, usage, track, auth, user_stats
+    app.register_blueprint(auth.bp)  # 優先註冊 auth，處理登入檢查
     app.register_blueprint(files.bp)
     app.register_blueprint(announcements.bp)
     app.register_blueprint(usage.bp)
     app.register_blueprint(track.bp)
+    app.register_blueprint(user_stats.bp)
 
     # 啟動追蹤背景工作（如果啟用）
     if config.tracking_enabled:

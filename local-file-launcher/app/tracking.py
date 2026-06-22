@@ -42,14 +42,46 @@ def init_db(db_path='data/usage.sqlite3'):
 
 
 def record_event(event_type: str, path: str):
-    """記錄事件到本機資料庫"""
+    """記錄事件到本機資料庫（從 request context 自動取得使用者）"""
     if not _config or not _config.get('enabled', False):
         return
 
     try:
-        # 取得機器名稱和使用者
-        machine = _config.get('machine_name') or socket.gethostname()
-        user = getpass.getuser()
+        # 從 Flask request context 取得使用者
+        from flask import request
+        username = request.cookies.get('username', 'anonymous')
+        record_event_with_user(event_type, path, username)
+    except Exception as e:
+        # 如果沒有 request context，使用系統使用者
+        username = getpass.getuser()
+        record_event_with_user(event_type, path, username)
+
+
+def record_event_with_user(event_type: str, path: str, username: str):
+    """記錄事件到本機資料庫（指定使用者）"""
+    if not _config or not _config.get('enabled', False):
+        return
+
+    try:
+        # 取得機器名稱（改為記錄瀏覽器資訊）
+        from flask import request
+        try:
+            user_agent = request.headers.get('User-Agent', '')
+            # 簡單解析瀏覽器類型
+            if 'Chrome' in user_agent:
+                machine = 'Chrome'
+            elif 'Firefox' in user_agent:
+                machine = 'Firefox'
+            elif 'Safari' in user_agent:
+                machine = 'Safari'
+            elif 'Edge' in user_agent:
+                machine = 'Edge'
+            else:
+                machine = 'Other'
+        except:
+            machine = _config.get('machine_name') or socket.gethostname()
+
+        user = username
         ts = datetime.now(timezone.utc).isoformat()
 
         # 寫入資料庫

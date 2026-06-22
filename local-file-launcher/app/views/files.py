@@ -1,8 +1,9 @@
 """
 檔案清單和開檔相關的視圖
 """
-from flask import Blueprint, render_template, request, jsonify, current_app
+from flask import Blueprint, render_template, request, jsonify, current_app, redirect, url_for
 from ..core import list_dir, open_file, safe_resolve
+from .auth import login_required
 import os
 
 
@@ -10,6 +11,7 @@ bp = Blueprint('files', __name__)
 
 
 @bp.route('/')
+@login_required
 def index():
     """首頁：顯示檔案清單"""
     config = current_app.config['APP_CONFIG']
@@ -31,6 +33,7 @@ def index():
 
 
 @bp.route('/api/list')
+@login_required
 def api_list():
     """API：列出指定目錄內容"""
     config = current_app.config['APP_CONFIG']
@@ -65,6 +68,7 @@ def api_list():
 
 
 @bp.route('/api/open', methods=['POST'])
+@login_required
 def api_open():
     """API：開啟檔案"""
     config = current_app.config['APP_CONFIG']

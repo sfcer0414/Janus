@@ -41,20 +41,139 @@ body {
     font-weight: 500;
 }
 
-.nav-menu {
-    list-style: none;
+.nav-right {
     display: flex;
+    align-items: center;
     gap: 2rem;
 }
 
-.nav-menu a {
+.nav-menu {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+    margin: 0;
+    align-items: center;
+}
+
+.nav-menu > li {
+    position: relative;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.username {
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem;
+}
+
+.logout-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0.4rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.nav-menu > li > a {
+    color: white;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    display: inline-block;
+    padding: 0.5rem 0;
+}
+
+.nav-menu > li > a:hover {
+    opacity: 0.8;
+}
+
+/* 下拉選單樣式 */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-toggle {
+    padding: 0.5rem 0;
+    display: inline-block;
+    cursor: pointer;
+    user-select: none;
     color: white;
     text-decoration: none;
     transition: opacity 0.2s;
 }
 
-.nav-menu a:hover {
+.dropdown-toggle:hover {
     opacity: 0.8;
+}
+
+.dropdown-toggle::after {
+    content: ' ▼';
+    font-size: 0.7em;
+    transition: transform 0.2s;
+    margin-left: 0.3rem;
+}
+
+.dropdown.active .dropdown-toggle::after {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 1rem;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-radius: 6px;
+    min-width: 170px;
+    display: none;
+    list-style: none;
+    padding: 0.5rem 0;
+    z-index: 1000;
+}
+
+/* 使用偽元素作為橋樑，防止hover中斷 */
+.dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -1rem;
+    left: 0;
+    right: 0;
+    height: 1rem;
+    background: transparent;
+}
+
+.dropdown:hover .dropdown-menu,
+.dropdown.active .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu li {
+    margin: 0;
+}
+
+.dropdown-menu a {
+    color: #333 !important;
+    padding: 0.5rem 1rem;
+    display: block;
+    white-space: nowrap;
+}
+
+.dropdown-menu a:hover {
+    background: #f0f0f0;
+    opacity: 1;
 }
 
 /* 主要內容 */

@@ -76,7 +76,7 @@ def generate_summary(events, range_days=30):
 
     # 統計資料
     file_counts = defaultdict(int)
-    machine_counts = defaultdict(int)
+    browser_counts = defaultdict(int)  # 瀏覽器統計（原本的 machine 欄位現在存瀏覽器資訊）
     user_counts = defaultdict(int)
     day_counts = defaultdict(int)
 
@@ -87,12 +87,12 @@ def generate_summary(events, range_days=30):
             if path and path != '/':
                 file_counts[path] += 1
 
-        # 機器統計
-        machine = event.get('machine', 'unknown')
-        machine_counts[machine] += 1
+        # 瀏覽器統計（使用 machine 欄位）
+        browser = event.get('machine', 'Unknown')
+        browser_counts[browser] += 1
 
         # 使用者統計
-        user = event.get('user', 'unknown')
+        user = event.get('user', 'anonymous')
         user_counts[user] += 1
 
         # 每日統計
@@ -110,8 +110,8 @@ def generate_summary(events, range_days=30):
         reverse=True
     )[:10]
 
-    by_machine = sorted(
-        [{'machine': machine, 'count': count} for machine, count in machine_counts.items()],
+    by_browser = sorted(
+        [{'browser': browser, 'count': count} for browser, count in browser_counts.items()],
         key=lambda x: x['count'],
         reverse=True
     )
@@ -136,7 +136,7 @@ def generate_summary(events, range_days=30):
     return {
         'range_days': range_days,
         'top_files': top_files,
-        'by_machine': by_machine,
+        'by_browser': by_browser,
         'by_user': by_user,
         'by_day': by_day
     }

@@ -12,10 +12,23 @@
         <nav class="navbar">
             <div class="container">
                 <h1 class="site-title">{{ title or '本機檔案' }}</h1>
-                <ul class="nav-menu">
-                    <li><a href="/">檔案</a></li>
-                    <li><a href="/announcements">公告</a></li>
-                </ul>
+                <div class="nav-right">
+                    <ul class="nav-menu">
+                        <li><a href="/">檔案</a></li>
+                        <li><a href="/announcements">公告</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle">管理</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/admin/usage">使用報表</a></li>
+                                <li><a href="/admin/user-stats">使用者統計</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="user-info">
+                        <span id="currentUser" class="username"></span>
+                        <button id="logoutBtn" class="logout-btn" style="display:none;">登出</button>
+                    </div>
+                </div>
             </div>
         </nav>
     </header>
@@ -36,6 +49,7 @@
     </script>
 
     <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
     <script src="{{ url_for('static', filename='js/api.js') }}"></script>
     <script src="{{ url_for('static', filename='js/render.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bridge.js') }}"></script>

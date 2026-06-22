@@ -3,12 +3,14 @@
 """
 from flask import Blueprint, render_template, jsonify, current_app
 from ..announcements import get_manager
+from .auth import login_required
 
 
 bp = Blueprint('announcements', __name__)
 
 
 @bp.route('/announcements')
+@login_required
 def announcements_page():
     """公告頁面"""
     manager = get_manager()
@@ -26,6 +28,7 @@ def announcements_page():
 
 
 @bp.route('/api/announcements')
+@login_required
 def api_announcements():
     """API：取得公告列表"""
     try:
